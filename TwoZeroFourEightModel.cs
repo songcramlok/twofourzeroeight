@@ -22,9 +22,11 @@ namespace twozerofoureight
             boardSize = size;
             board = new int[boardSize, boardSize];
             var range = Enumerable.Range(0, boardSize);
-            foreach(int i in range) {
-                foreach(int j in range) {
-                    board[i,j] = 0;
+            foreach (int i in range)
+            {
+                foreach (int j in range)
+                {
+                    board[i, j] = 0;
                 }
             }
             rand = new Random();
@@ -39,7 +41,7 @@ namespace twozerofoureight
 
         private int[,] Random(int[,] input)
         {
-            while (true)
+            while (!isFull())
             {
                 int x = rand.Next(boardSize);
                 int y = rand.Next(boardSize);
@@ -50,6 +52,20 @@ namespace twozerofoureight
                 }
             }
             return input;
+        }
+
+        public int showScore()
+        {
+            int score = 0;
+            //chack sum of number on score board
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    score += board[i, j];
+                }
+            }
+            return score;
         }
 
         public void PerformDown()
@@ -103,6 +119,7 @@ namespace twozerofoureight
             }
             board = Random(board);
             NotifyAll();
+            if (isFull()) checkGameOver();
         }
 
         public void PerformUp()
@@ -155,6 +172,7 @@ namespace twozerofoureight
             }
             board = Random(board);
             NotifyAll();
+            if (isFull()) checkGameOver();
         }
 
         public void PerformRight()
@@ -207,8 +225,10 @@ namespace twozerofoureight
                     board[i, k] = 0;
                 }
             }
+
             board = Random(board);
             NotifyAll();
+            if (isFull()) checkGameOver();
         }
 
         public void PerformLeft()
@@ -257,8 +277,61 @@ namespace twozerofoureight
                     board[i, k] = 0;
                 }
             }
+
             board = Random(board);
             NotifyAll();
+            if (isFull()) checkGameOver();
+        }
+        public bool isFull()
+        {
+            int count = 0;
+            foreach (int element in board)
+            {
+                if (element > 0)
+                {
+                    count++;
+                }
+            }
+            if (count == 16)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public void checkGameOver()
+        {
+            int count = 0;
+            for (int x = 0; x < 3; x++)
+            {
+                for (int y = 0; y < 4; y++)
+                {
+                    if (y != 3)
+                    {
+                        if (board[x, y] != board[x, y + 1] && board[x, y] != board[x + 1, y])
+                        {
+                            count++;
+                        }
+                    }
+                    else
+                    {
+                        if (board[x, y] != board[x + 1, y])
+                        {
+                            count++;
+                        }
+                    }
+                }
+            }
+            if (count == 12)
+            {
+                isGameOver = true;
+            }
+            else
+            {
+                isGameOver = false;
+            }
         }
     }
 }
